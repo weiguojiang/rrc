@@ -1,6 +1,6 @@
 /*********************************************************************
 *
-* (C) Copyright Broadcom Corporation 2013-2014
+* (C) Copyright Broadcom Corporation 2013-2015
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@
 *
 * @filename     ofagent.c
 *
-* @purpose      OF Agent Program
+* @purpose      OF-DPA Agent Program
 *
-* @component    OF-Agent
+* @component    OF-DPA
 *
 * @comments     none
 *
-* @create       22 Apri 2015
+* @create       23 Oct 2013
 *
 * @end
 *
@@ -36,31 +36,30 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/eventfd.h>
-#include <sys/time.h>  
+#include <sys/param.h>
 #include <unistd.h>
 #include <libgen.h>
 #include <signal.h>
 #include <linux/kernel.h>
-#include <linux/un.h>
 #include <arpa/inet.h>
 #include <argp.h>
 #include <regex.h>
 
-//#include "ofdpa_util.h"
+#include "ofdpa_datatypes.h"
 
-#include <ofdpa_api.h>
-#include "rte_of_driver_mt.h"
+#include "ofdpa_api.h"
 #include <SocketManager/socketmanager.h>
 #include <AIM/aim.h>
 #include <AIM/aim_pvs_syslog.h>
 #include <BigList/biglist.h>
 #include <indigo/port_manager.h>
+#include <indigo/types.h>
+#include <indigo/of_state_manager.h>
 #include <SocketManager/socketmanager.h>
 #include <OFConnectionManager/ofconnectionmanager.h>
 #include <OFStateManager/ofstatemanager.h>
 #include <indigo/forwarding.h>
-//#include <ind_of_util.h>
-#include "ofdpa_datatypes.h"
+#include <ind_ofdpa_util.h>
 
 
 #pragma GCC diagnostic ignored "-Wunused-function" 
@@ -103,21 +102,31 @@ static int sigterm_eventfd;
 
 static biglist_t *controllers = NULL;
 static biglist_t *listeners = NULL;
-/*static biglist_t *rtemode = NULL;*/
+
 static char *datapath_name = "ofagent";
 
 typedef struct
 {
   int           agentdebuglvl;
-  int           rtemode;
+  int           rtemode;  
+#ifdef OFAGENT_APP
+  int           debuglvl;
+  int           debugComps[10]; // 10: TODO: update from OF Agent debug levels
+#endif
+  of_dpid_t     dpid;
 } arguments_t;
 
 /* The options we understand. */
 static struct argp_option options[] =
 {
   { "agentdebuglvl", 'a',  "AGENTDEBUGLVL",  0, "The verbosity of OF Agent debug messages.",0},
+#ifdef OFAGENT_APP
+  { "ofdpadebuglvl", 'd', "OFDPADEBUGLVL",  0, "The verbosity of OF-DPA debug messages.",                             0 },
+  { "ofdpadebugcomp",'c', "OFPDACOMPONENT", 0, "The OF-DPA component for which debug messages are enabled.",          0 },
+#endif /* OFAGENT_APP */
   { "controller",    'c',  "IP:PORT",        0, "Controller",                               0},
   { "listen",        'l',  "IP:PORT",        0, "Listen",                                   0},
+  { "dpid", 'i',  "DATAPATHID", 0,  "Specify Datapath ID." },
   { "rtemode",       'm',  "MODE",           0, "RTEMODE:legacy,rte,rtetest",               0},
   { 0 }
 };
@@ -238,8 +247,38 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
      know is a pointer to our arguments structure. */
 
   arguments_t *arguments = state->input;
+#ifdef OFAGENT_APP
+  int          component;
+#endif
   switch (key)
   {
+#ifdef OFAGENT_APP
+    case 'c':                           /* debugcomp */
+      errno = 0;
+
+      component = strtoul(arg, NULL, 0);
+      if ((errno != 0) ||
+          (component >= OFDPA_COMPONENT_MAX))
+      {
+        argp_error(state, "Invalid component ID \"%s\"", arg);
+        return errno;
+      }
+      arguments->debugComps[component] = 1;
+
+      break;
+
+    case 'd':                           /* debuglvl */
+      errno = 0;
+
+      arguments->debuglvl = strtoul(arg, NULL, 0);
+      if (errno != 0)
+      {
+        argp_error(state, "Invalid debuglvl \"%s\"", arg);
+        return errno;
+      }
+
+      break;
+#endif
     case 'a':                           /* ofagent debuglvl */
       errno = 0;
       arguments->agentdebuglvl = strtoul(arg, NULL, 0);
@@ -257,10 +296,25 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
       errno = 0;
       listeners = biglist_append(listeners, arg);
       break;
+
+    case 'i':                           /* dpid */
+      errno = 0;
+
+      char *endptr;
+      arguments->dpid = strtoull(arg, &endptr, 16);
+      if (errno != 0)
+      {
+        argp_error(state, "Invalid dpid \"%s\", must be hex digit string", arg);
+        return errno;
+      }
+
+    break;
+
    case 'm':
       errno = 0;
       arguments->rtemode = strtoul(arg, NULL, 0);
       break;
+
     case ARGP_KEY_NO_ARGS:
     case ARGP_KEY_END:
       break;
@@ -330,6 +384,7 @@ static int is_already_running(char *programName)
     {
       printf("%s: Failed to read PID from file %s; %s\r\n",
              programName, PIDFILE, strerror(errno));
+      fclose(pidfile);
       return 1;
     }
 
@@ -339,6 +394,7 @@ static int is_already_running(char *programName)
     {
       printf("%s: Failed to convert PID from file %s; %s\r\n",
              programName, PIDFILE, strerror(errno));
+      fclose(pidfile);
       return 1;
     }
 
@@ -350,6 +406,7 @@ static int is_already_running(char *programName)
     {
       printf("%s already running with PID %d.  Exiting...\r\n",
              programName, runningpid);
+      fclose(pidfile);
       return 1;
     }
 
@@ -565,6 +622,10 @@ int main(int argc, char *argv[])
   char versionBuf[100];
   char exeName[100];
   pid_t mypid = getpid();
+#ifdef OFAGENT_APP
+  const char *names;
+  int j;
+#endif
   char *fileStemName;
   int i;
   static char docBuffer[600];
@@ -583,7 +644,12 @@ int main(int argc, char *argv[])
   arguments_t arguments =
   {
     .agentdebuglvl   = 0,
-    .rtemode = 0
+    .rtemode = 0,
+#ifdef OFAGENT_APP
+    .debuglvl   = 0,
+    .debugComps = { 0 },
+#endif
+    .dpid = OFSTATEMANAGER_CONFIG_DPID_DEFAULT
   };
 
   fileStemName = stemname(strdup(__FILE__));
@@ -599,7 +665,7 @@ int main(int argc, char *argv[])
   i = strlen(docBuffer);
   i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "OFAGENTDEBUGLVL  = %d\n", 0);
   i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "Valid OF Agent debug levels are 0 - %d.\n", 2);
-#if 0
+#ifdef OFAGENT_APP
   i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "OFDPADEBUGLVL  = %d\n", 0);
   i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "Valid OF-DPA debug levels are 0 - %d.\n", 0);
   i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "No components enabled for debug:\n");
@@ -614,6 +680,8 @@ int main(int argc, char *argv[])
     }
   }
 #endif
+  i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "DATAPATHID = 0x%016llX\n", (long long unsigned int)OFSTATEMANAGER_CONFIG_DPID_DEFAULT);
+
   i += snprintf(&docBuffer[i], sizeof(docBuffer) - i, "\n");
 
   AIM_LOG_STRUCT_REGISTER();
@@ -642,12 +710,14 @@ int main(int argc, char *argv[])
 
   sprintf(exeName, "/proc/%u/exe", mypid);
   errno = 0;
-  if (-1 == readlink(exeName, fullProgName, sizeof(fullProgName)))
+  i = readlink(exeName, fullProgName, sizeof(fullProgName));
+  if (-1 == i)
   {
     printf("%s: Failed to determine full path of executable, %s.\r\n",
            __FUNCTION__, strerror(errno));
     exit(EXIT_FAILURE);
   }
+  fullProgName[MIN(i, sizeof(fullProgName) - 1)] = '\0';
 
   errno = 0;
   if (-1 == chdir(dirname(fullProgName)))
@@ -657,6 +727,23 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
+#ifdef OFAGENT_APP
+
+  if (arguments.debuglvl != ofdpaDebugVerbosityGet())
+  {
+    printf("Setting debug verbosity to %d.\r\n", arguments.debuglvl);
+    ofdpaDebugVerbositySet(arguments.debuglvl);
+  }
+
+  for (j = OFDPA_COMPONENT_FIRST; j < OFDPA_COMPONENT_MAX; j++)
+  {
+    if (arguments.debugComps[j])
+    {
+      printf("Enabling debugging for component %d.\r\n", j);
+      ofdpaDebugComponentEnable(j);
+    }
+  }
+#endif
   /* Set up Indigo Agent log level */
   if (arguments.agentdebuglvl >= INDIGO_LOGLEVEL_DEFAULT) {
       aim_log_fid_set_all(AIM_LOG_FLAG_FATAL, 1);
@@ -672,10 +759,23 @@ int main(int argc, char *argv[])
       aim_log_fid_set_all(AIM_LOG_FLAG_TRACE, 1);
   }
 #if 0
+  /* Setup Indigo DPID */
+  printf("OF Datapath ID: 0x%016llX\n", (long long unsigned int)arguments.dpid);
+  (void)indigo_core_dpid_set(arguments.dpid);
   /* Initialize all modules */
   printf("Initializing the system.\r\n");
 
   rc = ofdpaClientInitialize(programName);
+  if (rc != OFDPA_E_NONE)
+  {
+    return rc;
+  }
+  rc = ofdpaClientEventSockBind();
+  if (rc != OFDPA_E_NONE)
+  {
+    return rc;
+  }
+  rc = ofdpaClientPktSockBind();
   if (rc != OFDPA_E_NONE)
   {
     return rc;
@@ -696,10 +796,10 @@ int main(int argc, char *argv[])
       return 1;
   }
 
-   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_ACL_POLICY, "ACL",&DPA_ops, NULL);
-   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_BRIDGING, "BRIDGING",&DPA_ops, NULL);
-   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_VLAN_INGRESS, "VLAN INGRESS",&DPA_ops, NULL);
-   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_VLAN_EGRESS, "VLAN EGRESS",&DPA_ops, NULL);
+//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_ACL_POLICY, "ACL",&DPA_ops, NULL);
+//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_BRIDGING, "BRIDGING",&DPA_ops, NULL);
+//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_VLAN_INGRESS, "VLAN INGRESS",&DPA_ops, NULL);
+//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_VLAN_EGRESS, "VLAN EGRESS",&DPA_ops, NULL);
 
 
   /* Enable all modules */
@@ -726,37 +826,6 @@ int main(int argc, char *argv[])
   {
       ncp_rte_load();
       
-  }
-
-  if (arguments.rtemode == 2)
-  {
-      ncp_rte_load();
-
-      eioa_flow_add_bridge_static_entry_test1();
-      eioa_flow_add_bridge_static_entry_test2();
-      eioa_flow_add_ingress_map_entry_test1();
-      eioa_flow_add_ingress_map_entry_test2();
-      eioa_flow_add_egress_map_entry_test1();
-      eioa_flow_add_egress_map_entry_test2();
-
- #if 0
-      eioa_flow_add_ingress_map_entry_test1();
-      eioa_flow_add_ingress_map_entry_test3();
-
-      eioa_flow_add_egress_map_entry_test1();
-      eioa_flow_add_egress_map_entry_test3();
-      eioa_flow_add_egress_map_entry_test4();
-
-      eioa_flow_add_bridge_static_entry_test2();
-      eioa_flow_add_bridge_static_entry_test2();
-      eioa_flow_add_ACL_vlan_Test1();
-      eioa_flow_add_ACL_vlan_Test2();
-      eioa_flow_add_ACL_vlan_Test3();
-      eioa_flow_add_ACL_vlan_test4();
-      eioa_flow_add_ACL_vlan_test5();
-      eioa_flow_add_ACL_vlan_test6();
-#endif
-      call_system_traffic();
   }
   
  #endif
@@ -823,11 +892,11 @@ int main(int argc, char *argv[])
   of_desc_str_t mfr_desc = "Nokia Corp.";
   ind_core_mfr_desc_set(mfr_desc);
 
-  of_desc_str_t sw_desc = "OF-Agent 1.0";
+  of_desc_str_t sw_desc = "OF-DPA 2.0";
   ind_core_sw_desc_set(sw_desc);
 
   of_desc_str_t hw_desc = "";
-  snprintf(hw_desc, sizeof(hw_desc), "OF-Agent 1.0");
+  snprintf(hw_desc, sizeof(hw_desc), "OF-DPA 2.0");
   ind_core_hw_desc_set(hw_desc);
 
   of_desc_str_t dp_desc = "";
@@ -878,7 +947,7 @@ int main(int argc, char *argv[])
   }
 #else
   {
-        char path[UNIX_PATH_MAX];
+        char path[128];
         snprintf(path, sizeof(path), "/var/run/ofagent-ucli.%s.sock", datapath_name);
         of_cli_init(path);
   }

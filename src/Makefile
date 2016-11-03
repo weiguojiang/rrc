@@ -1,11 +1,11 @@
 ##################################
-# (C) Copyright 2004 Nokia, Inc.
+# (C) Copyright 2016 Nokia, Inc.
 # All rights reserved.
 #
-# $Author: tsheng $
-# $DateTime: 2015/04/08 04:14:57 $
+# $DateTime: $
 # $Change:  $
-#
+#    based on the version of tsheng $
+
 ######################################
 
 ifndef TOPDIR
@@ -15,13 +15,9 @@ endif
 # What sortof target system shall we compile this for?
 ifndef ARCH
 export ARCH = i386
-#export ARCH = arm15
 endif
 ifndef DEVICE
 export DEVICE = simulator
-endif
-ifndef KERNELVERSION 
-LSDK_KERNELVERSION =2.6.39.4-9
 endif
 
 ifndef LIBPATH
@@ -50,30 +46,8 @@ OFAGENT_DRIVER_DIR = $(TOPDIR)/src/drivers/ofpsdriver
 targets = $(wildcard $(OFAGENT_DIR)/*.c)
 
 # Set the toolchain path
-ifeq ($(DEVICE), simulator)
-export TOOLPATH=$(TOPDIR)/tools/gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux
-CROSS_COMPILE_ARM = $(TOOLPATH)/bin/arm-linux-gnueabi-
-endif
-ifeq ($(DEVICE), hardware)
-export TOOLPATH=$(TOPDIR)/tools/gcc-linaro-arm-linux-gnueabihf-4.8-2013.06_linux
-CROSS_COMPILE_ARM = $(TOOLPATH)/bin/arm-linux-gnueabihf-
-endif
-# Set the toolchain path
-CROSS_COMPILE_GCC=$(TOPDIR)/tools/gcc-3.3.3-2.4.25/toolchain_arm
-CROSS_COMPILE_LINC=/build/ltesdkroot/Platforms/PS_LFS_REL/MD1_PS_LFS_REL_2015_02_0116-LTE/os/archs/arm-cortexa15-linux-gnueabihf/bld-tools/i686-pc-linux-gnu/bin                                                                                
-CROSS_COMPILE_CYGWIN =
 CROSS_COMPILE_X86 =
-
-
-
-# Default to GTO cross compile
-ifeq  ($(ARCH), arm15) 
-export CROSS_COMPILE = $(CROSS_COMPILE_ARM)
-export PRIVLIBPATH = $(TOOLPATH)/arm-linux-gnueabi/libc/usr/lib/arm-linux-gnueabi
-export RTELIB :=NcpApi NcpCliCommon rtecommon NcpSalIf Judy Xyssl Mpm
-else
 export CROSS_COMPILE = $(CROSS_COMPILE_X86)
-endif
 
 export AR      = $(CROSS_COMPILE)ar
 export AS      = $(CROSS_COMPILE)as
@@ -92,13 +66,9 @@ CFLAG := -O2 -W -Wall
 ifeq ($(GDBCFLAG),TRUE) 
 CFLAG += -g
 endif
-CFLAG +=-Iinclude -I$(OFAGENT_DRIVER_DIR)/include \
-#			-Ikernels/linux-4.0/include \
-
+CFLAG +=-Iinclude -I$(OFAGENT_DRIVER_DIR)/include 
                                                                                
-# Set the kernel path which is used by several build scripts
-#export KERNELPATH=$(TOPDIR)/src/kernels/arm-cortexa15-linux-$(LSDK_KERNELVERSION)
-export KERNELPATH=$(TOPDIR)/src/kernels/linux-4.0
+export KERNELPATH= 
                                                                                 
 # List of subsystem libraties for indigo
 INDIGO_LIBS = \
@@ -156,13 +126,7 @@ $(addsuffix -sub,$(OFAGENT_DRIVER_DIR))::
 	$(MAKE) -C $(@:-sub=)
 endif
 
-ifeq  ($(ARCH), arm15)
-CFLAG += -DRTE_CFG_LOAD
-endif
-ifeq ($(DEVICE), hardware)
-CFLAG += -Dpthread
-CFLAG += -Dlrt
-endif
+
 ## Default target is to build all cores
 all: ofagent
 
