@@ -31,8 +31,8 @@
 **********************************************************************/
 
 #include <indigo/forwarding.h>
-#include <ind_of_util.h>
-#include <ind_of_log.h>
+#include <ind_ofdpa_util.h>
+#include <ind_ofdpa_log.h>
 
 static indigo_error_t
 ind_ofdpa_translate_group_actions(of_list_action_t *actions, 
@@ -119,7 +119,7 @@ ind_ofdpa_translate_group_actions(of_list_action_t *actions,
         case OF_ACTION_POP_VLAN:
         case OF_ACTION_STRIP_VLAN: 
             group_bucket->popVlanTag = 1;
-            *group_action_bitmap |= IND_OFDPA_POPVLAN;
+            *group_action_bitmap |= IND_OFDPA_POP_VLAN;
             break;
         
         case OF_ACTION_GROUP: 
@@ -184,14 +184,9 @@ ind_ofdpa_translate_group_buckets(uint32_t group_id,
     switch (group_type)
     {
       case OFDPA_GROUP_ENTRY_TYPE_L2_INTERFACE:
-        if((group_action_bitmap | IND_OFDPA_L2INTERFACE_BITMAP) != IND_OFDPA_L2INTERFACE_BITMAP)
-        {
-          err = INDIGO_ERROR_COMPAT;
-          break;
-        }
         group_bucket_entry.bucketData.l2Interface.outputPort = group_bucket.outputPort;
         group_bucket_entry.bucketData.l2Interface.popVlanTag = group_bucket.popVlanTag;
-
+        group_bucket_entry.bucketData.l2Interface.allowVlanTranslation = group_bucket.allowVlanTranslation;
         break;
 
       case OFDPA_GROUP_ENTRY_TYPE_L2_REWRITE:

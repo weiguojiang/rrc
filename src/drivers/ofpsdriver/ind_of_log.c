@@ -29,7 +29,7 @@
 * @end
 *
 **********************************************************************/
-#include <ind_of_log.h>
+#include "ind_ofdpa_log.h"
 
 AIM_LOG_STRUCT_DEFINE(
                       AIM_LOG_OPTIONS_DEFAULT,

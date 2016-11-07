@@ -951,7 +951,7 @@ void ofdpaPortIndexSet(uint32_t *portNum, uint32_t index)
 *
 * @end
 *********************************************************************/
-OFDPA_ERROR_t ofdpaPortNextGet(int32_t portNum, int32_t *nextPortNum)
+OFDPA_ERROR_t ofdpaPortNextGet(uint32_t portNum, uint32_t *nextPortNum)
 {
 #ifdef RTE_MODE   
     if(rte_port_next_get(portNum,nextPortNum,xgmac_flag) != NCP_ST_SUCCESS)
@@ -1000,7 +1000,7 @@ OFDPA_ERROR_t ofdpaPortMacGet(uint32_t portNum, ofdpaMacAddr_t *mac)
 *
 * @end
 *********************************************************************/
-OFDPA_ERROR_t ofdpaPortNameGet(uint32_t portNum, char *name)
+OFDPA_ERROR_t ofdpaPortNameGet(uint32_t portNum, ofdpa_buffdesc *name)
 {
 #ifdef RTE_MODE
     if(rte_port_name_get(portNum,name,xgmac_flag) != NCP_ST_SUCCESS)
@@ -1021,7 +1021,7 @@ OFDPA_ERROR_t ofdpaPortNameGet(uint32_t portNum, char *name)
 *
 * @end
 *********************************************************************/
-OFDPA_ERROR_t ofdpaPortStateGet(uint32_t  portNum, ofdpaPortLinkStatus  *state)
+OFDPA_ERROR_t ofdpaPortStateGet(uint32_t  portNum, uint32_t  *state)
 {
 #ifdef RTE_MODE
     ncp_mac_phy_status_t phyStatus;
@@ -1195,7 +1195,7 @@ OFDPA_ERROR_t ofdpaPortStatsGet(uint32_t portNum, ofdpaPortStats_t *stats)
     stats->tx_packets = (((uint64_t)tx_mac_stats.tx_frm.h)<<32&0xFFFFFFFF00000000)| tx_mac_stats.tx_frm.l;
     stats->tx_bytes   = (((uint64_t)tx_mac_stats.tx_octets.h)<<32&0xFFFFFFFF00000000)| tx_mac_stats.tx_octets.l;
     stats->tx_errors  = (((uint64_t)tx_mac_stats.tx_bad_frm.h)<<32&0xFFFFFFFF00000000)| tx_mac_stats.tx_bad_frm.l;
-#else
+
     stats->port_no = portNum;
     stats->rx_packets = 100;
     stats->tx_packets = 100;

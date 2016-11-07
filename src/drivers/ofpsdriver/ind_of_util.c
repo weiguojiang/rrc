@@ -29,8 +29,8 @@
 * @end
 *
 **********************************************************************/
-#include <ind_of_util.h>
-#include <ind_of_log.h>
+#include "ind_ofdpa_util.h"
+#include "ind_ofdpa_log.h"
 
 indigo_error_t indigoConvertOfdpaRv(OFDPA_ERROR_t result)
 {
