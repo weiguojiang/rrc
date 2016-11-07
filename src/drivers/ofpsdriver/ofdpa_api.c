@@ -33,8 +33,8 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include "ofdpa_datatypes.h"
-#include <ind_of_log.h>
-#include <ind_of_util.h>
+#include <ind_ofdpa_log.h>
+#include <ind_ofdpa_util.h>
 #ifdef RTE_MODE
 #include "ncp.h"
 #include "RTEOfDriver_api.h"
