@@ -141,7 +141,7 @@ extern void __socketmanager_module_init__(void);
 extern void of_cli_init(const char *path);
 extern indigo_error_t indigo_fwd_flow_create(indigo_cookie_t flow_id,
                                       of_flow_add_t *flow_add,
-                                      uint8_t table_id);
+                                      uint8_t *table_id);
 extern indigo_error_t indigo_fwd_flow_modify(indigo_cookie_t flow_id,
                                       of_flow_modify_t *flow_modify);
 extern indigo_error_t indigo_fwd_flow_delete(indigo_cookie_t flow_id,
@@ -550,9 +550,9 @@ static indigo_error_t
 op_entry_create(void *table_priv, indigo_cxn_id_t cxn_id,
                 of_flow_add_t *obj, indigo_cookie_t flow_id, void **entry_priv)
 {
-    uint8_t table_id;
+    uint8_t table_id = 0;
 
-    return indigo_fwd_flow_create(flow_id,obj,&table_id);
+    return indigo_fwd_flow_create(flow_id,obj, &table_id);
 }
 
 static indigo_error_t
@@ -796,11 +796,7 @@ int main(int argc, char *argv[])
       return 1;
   }
 
-//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_ACL_POLICY, "ACL",&DPA_ops, NULL);
-//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_BRIDGING, "BRIDGING",&DPA_ops, NULL);
-//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_VLAN_INGRESS, "VLAN INGRESS",&DPA_ops, NULL);
-//   indigo_core_table_register(OFDPA_FLOW_TABLE_ID_VLAN_EGRESS, "VLAN EGRESS",&DPA_ops, NULL);
-
+  indigo_core_table_register(0, "Test",&DPA_ops, NULL);
 
   /* Enable all modules */
 

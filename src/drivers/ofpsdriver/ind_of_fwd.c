@@ -319,368 +319,9 @@ static indigo_error_t ind_ofdpa_match_fields_masks_get(const of_match_t *match, 
   ind_ofdpa_fields_t ind_ofdpa_match_fields_bitmask;
 
   ind_ofdpa_populate_flow_bitmask(match, &ind_ofdpa_match_fields_bitmask);
-
+#if 0
   switch (flow->tableId)
   {
-    case OFDPA_FLOW_TABLE_ID_INGRESS_PORT:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_ING_PORT_FLOW_MATCH_BITMAP) != IND_OFDPA_ING_PORT_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_ING_PORT_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_ING_PORT_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.ingressPortFlowEntry.match_criteria.inPort        = match->fields.in_port;
-        flow->flowData.ingressPortFlowEntry.match_criteria.inPortMask    = match->masks.in_port;
-        flow->flowData.ingressPortFlowEntry.match_criteria.tunnelId      = match->fields.tunnel_id;
-        flow->flowData.ingressPortFlowEntry.match_criteria.tunnelIdMask  = match->masks.tunnel_id;
-        flow->flowData.ingressPortFlowEntry.match_criteria.etherType     = match->fields.eth_type;
-        flow->flowData.ingressPortFlowEntry.match_criteria.etherTypeMask = match->masks.eth_type;
-//        flow->flowData.ingressPortFlowEntry.match_criteria.lmepId        = match->fields.ofdpa_lmep_id;
-//        flow->flowData.ingressPortFlowEntry.match_criteria.lmepIdMask    = match->masks.ofdpa_lmep_id;
-      }
-      break;
-      
-      
-    case OFDPA_FLOW_TABLE_ID_INJECTED_OAM:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_INJECTED_OAM_FLOW_MATCH_BITMAP) != IND_OFDPA_INJECTED_OAM_FLOW_MATCH_BITMAP)
-      {
-       err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_INJECTED_OAM_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_INJECTED_OAM_FLOW_MATCH_MAND_BITMAP)
-      {
-       err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
- //       flow->flowData.injectedOamFlowEntry.match_criteria.lmepId = match->fields.ofdpa_lmep_id;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_VLAN:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_VLAN_FLOW_MATCH_BITMAP) != IND_OFDPA_VLAN_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_VLAN_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_VLAN_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.vlanFlowEntry.match_criteria.inPort        = match->fields.in_port;
-        flow->flowData.vlanFlowEntry.match_criteria.vlanId        = match->fields.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-        flow->flowData.vlanFlowEntry.match_criteria.vlanIdMask    = match->masks.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_VLAN_1:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_VLAN1_FLOW_MATCH_BITMAP) != IND_OFDPA_VLAN1_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_VLAN1_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_VLAN1_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.vlan1FlowEntry.match_criteria.inPort        = match->fields.in_port;
-        flow->flowData.vlan1FlowEntry.match_criteria.vlanId        = match->fields.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-//        flow->flowData.vlan1FlowEntry.match_criteria.ovid          = match->fields.ofdpa_ovid;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_MAINTENANCE_POINT:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_MP_FLOW_MATCH_BITMAP) != IND_OFDPA_MP_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_MP_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_MP_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.mpFlowEntry.match_criteria.etherType          = match->fields.eth_type;
-        flow->flowData.mpFlowEntry.match_criteria.etherTypeMask      = match->masks.eth_type;
-/*
-        flow->flowData.mpFlowEntry.match_criteria.oamY1731Mdl        = match->fields.ofdpa_oam_y1731_mdl;
-        flow->flowData.mpFlowEntry.match_criteria.oamY1731MdlMask    = match->masks.ofdpa_oam_y1731_mdl & OFDPA_OAM_Y1731_MDL_EXACT_MASK;
-        flow->flowData.mpFlowEntry.match_criteria.oamY1731Opcode     = match->fields.ofdpa_oam_y1731_opcode;
-        flow->flowData.mpFlowEntry.match_criteria.oamY1731OpcodeMask = match->masks.ofdpa_oam_y1731_opcode;
-*/
-        flow->flowData.mpFlowEntry.match_criteria.inPort             = match->fields.in_port;
-        flow->flowData.mpFlowEntry.match_criteria.vlanId             = match->fields.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-        flow->flowData.mpFlowEntry.match_criteria.vlanIdMask         = match->masks.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-
-        memcpy(flow->flowData.mpFlowEntry.match_criteria.destMac.addr, &match->fields.eth_dst, OF_MAC_ADDR_BYTES);
-        memcpy(flow->flowData.mpFlowEntry.match_criteria.destMacMask.addr, &match->masks.eth_dst, OF_MAC_ADDR_BYTES);
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_MPLS_L2_PORT:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_MPLS_L2_PORT_FLOW_MATCH_BITMAP) != IND_OFDPA_MPLS_L2_PORT_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_MPLS_L2_PORT_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_MPLS_L2_PORT_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-//        flow->flowData.mplsL2PortFlowEntry.match_criteria.mplsL2Port     = match->fields.ofdpa_mpls_l2_port;
-//        flow->flowData.mplsL2PortFlowEntry.match_criteria.mplsL2PortMask = match->masks.ofdpa_mpls_l2_port;
-        flow->flowData.mplsL2PortFlowEntry.match_criteria.etherType      = match->fields.eth_type;
-        flow->flowData.mplsL2PortFlowEntry.match_criteria.etherTypeMask  = match->masks.eth_type;
-        flow->flowData.mplsL2PortFlowEntry.match_criteria.tunnelId       = match->fields.tunnel_id;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_TERMINATION_MAC:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_TERM_MAC_FLOW_MATCH_BITMAP) != IND_OFDPA_TERM_MAC_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_TERM_MAC_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_TERM_MAC_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.terminationMacFlowEntry.match_criteria.inPort     = match->fields.in_port;
-        flow->flowData.terminationMacFlowEntry.match_criteria.inPortMask = match->masks.in_port;
-        flow->flowData.terminationMacFlowEntry.match_criteria.etherType  = match->fields.eth_type;
-
-        memcpy(flow->flowData.terminationMacFlowEntry.match_criteria.destMac.addr, &match->fields.eth_dst, OF_MAC_ADDR_BYTES);
-        memcpy(flow->flowData.terminationMacFlowEntry.match_criteria.destMacMask.addr, &match->masks.eth_dst, OF_MAC_ADDR_BYTES);
-
-        flow->flowData.terminationMacFlowEntry.match_criteria.vlanId     = match->fields.vlan_vid;
-        flow->flowData.terminationMacFlowEntry.match_criteria.vlanIdMask = match->masks.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_MPLS_0:
-    case OFDPA_FLOW_TABLE_ID_MPLS_1:
-    case OFDPA_FLOW_TABLE_ID_MPLS_2:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_MPLS_FLOW_MATCH_BITMAP) != IND_OFDPA_MPLS_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_MPLS_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_MPLS_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.mplsFlowEntry.match_criteria.etherType               = match->fields.eth_type;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsBos                 = match->fields.mpls_bos;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsLabel               = match->fields.mpls_label;
-        flow->flowData.mplsFlowEntry.match_criteria.inPort                  = match->fields.in_port;
-        flow->flowData.mplsFlowEntry.match_criteria.inPortMask              = match->masks.in_port;
-/*
-        flow->flowData.mplsFlowEntry.match_criteria.mplsTtl                 = match->fields.ofdpa_mpls_ttl;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsTtlMask             = match->masks.ofdpa_mpls_ttl;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsDataFirstNibble     = match->fields.ofdpa_mpls_data_first_nibble;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsDataFirstNibbleMask = match->masks.ofdpa_mpls_data_first_nibble;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsAchChannel          = match->fields.ofdpa_mpls_ach_channel;
-        flow->flowData.mplsFlowEntry.match_criteria.mplsAchChannelMask      = match->masks.ofdpa_mpls_ach_channel;
-        flow->flowData.mplsFlowEntry.match_criteria.nextLabelIsGal          = match->fields.ofdpa_mpls_next_label_is_gal;
-        flow->flowData.mplsFlowEntry.match_criteria.nextLabelIsGalMask      = match->masks.ofdpa_mpls_next_label_is_gal;
-*/
-        flow->flowData.mplsFlowEntry.match_criteria.destIp4                 = match->fields.ipv4_dst;
-        flow->flowData.mplsFlowEntry.match_criteria.destIp4Mask             = match->masks.ipv4_dst;
-
-        memcpy(&flow->flowData.mplsFlowEntry.match_criteria.destIp6, &match->fields.ipv6_dst, OF_IPV6_BYTES);
-        memcpy(&flow->flowData.mplsFlowEntry.match_criteria.destIp6Mask, &match->masks.ipv6_dst, OF_IPV6_BYTES);
-
-        flow->flowData.mplsFlowEntry.match_criteria.ipProto        = match->fields.ip_proto;
-        flow->flowData.mplsFlowEntry.match_criteria.ipProtoMask    = match->masks.ip_proto;
-        flow->flowData.mplsFlowEntry.match_criteria.udpSrcPort     = match->fields.udp_src;
-        flow->flowData.mplsFlowEntry.match_criteria.udpSrcPortMask = match->masks.udp_src;
-        flow->flowData.mplsFlowEntry.match_criteria.udpDstPort     = match->fields.udp_dst;
-        flow->flowData.mplsFlowEntry.match_criteria.udpDstPortMask = match->masks.udp_dst;
-      }
-      break;
-/*
-    case OFDPA_FLOW_TABLE_ID_MPLS_MAINTENANCE_POINT:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_MPLS_MP_FLOW_MATCH_BITMAP) != IND_OFDPA_MPLS_MP_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_MPLS_MP_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_MPLS_MP_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.mplsMpFlowEntry.match_criteria.lmepId         = match->fields.ofdpa_lmep_id;
-        flow->flowData.mplsMpFlowEntry.match_criteria.oamY1731Opcode = match->fields.ofdpa_oam_y1731_opcode;
-        flow->flowData.mplsMpFlowEntry.match_criteria.etherType      = match->fields.eth_type;
-      }
-      break;
-*/
-    case OFDPA_FLOW_TABLE_ID_UNICAST_ROUTING:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_UCAST_ROUTING_FLOW_MATCH_BITMAP) != IND_OFDPA_UCAST_ROUTING_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if (((ind_ofdpa_match_fields_bitmask & IND_OFDPA_UCAST_ROUTINGV4_FLOW_MATCH_MAND_BITMAP)
-                  != IND_OFDPA_UCAST_ROUTINGV4_FLOW_MATCH_MAND_BITMAP) &&
-               ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_UCAST_ROUTINGV6_FLOW_MATCH_MAND_BITMAP)
-                  != IND_OFDPA_UCAST_ROUTINGV6_FLOW_MATCH_MAND_BITMAP))
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.unicastRoutingFlowEntry.match_criteria.etherType  = match->fields.eth_type;
-//        flow->flowData.unicastRoutingFlowEntry.match_criteria.vrf        = match->fields.ofdpa_vrf;
-//        flow->flowData.unicastRoutingFlowEntry.match_criteria.vrfMask    = match->masks.ofdpa_vrf;
-        flow->flowData.unicastRoutingFlowEntry.match_criteria.dstIp4     = match->fields.ipv4_dst;
-        flow->flowData.unicastRoutingFlowEntry.match_criteria.dstIp4Mask = match->masks.ipv4_dst;
-
-        memcpy(&flow->flowData.unicastRoutingFlowEntry.match_criteria.dstIp6, &match->fields.ipv6_dst, OF_IPV6_BYTES);
-        memcpy(&flow->flowData.unicastRoutingFlowEntry.match_criteria.dstIp6Mask, &match->masks.ipv6_dst, OF_IPV6_BYTES);
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_MULTICAST_ROUTING:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_MCAST_ROUTING_FLOW_MATCH_BITMAP) != IND_OFDPA_MCAST_ROUTING_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if (((ind_ofdpa_match_fields_bitmask & IND_OFDPA_MCAST_ROUTINGV4_FLOW_MATCH_MAND_BITMAP)
-                  != IND_OFDPA_MCAST_ROUTINGV4_FLOW_MATCH_MAND_BITMAP) &&
-               ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_MCAST_ROUTINGV6_FLOW_MATCH_MAND_BITMAP)
-                  != IND_OFDPA_MCAST_ROUTINGV6_FLOW_MATCH_MAND_BITMAP))
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.multicastRoutingFlowEntry.match_criteria.etherType  = match->fields.eth_type;
-        flow->flowData.multicastRoutingFlowEntry.match_criteria.vlanId     = match->fields.vlan_vid;
-//        flow->flowData.multicastRoutingFlowEntry.match_criteria.vrf        = match->fields.ofdpa_vrf;
-//        flow->flowData.multicastRoutingFlowEntry.match_criteria.vrfMask    = match->masks.ofdpa_vrf;
-        flow->flowData.multicastRoutingFlowEntry.match_criteria.srcIp4     = match->fields.ipv4_src;
-        flow->flowData.multicastRoutingFlowEntry.match_criteria.srcIp4Mask = match->masks.ipv4_src;
-        flow->flowData.multicastRoutingFlowEntry.match_criteria.dstIp4     = match->fields.ipv4_dst;
-
-        memcpy(flow->flowData.multicastRoutingFlowEntry.match_criteria.srcIp6.s6_addr, match->fields.ipv6_src.addr, OF_IPV6_BYTES);
-        memcpy(flow->flowData.multicastRoutingFlowEntry.match_criteria.srcIp6Mask.s6_addr, match->masks.ipv6_src.addr, OF_IPV6_BYTES);
-        memcpy(flow->flowData.multicastRoutingFlowEntry.match_criteria.dstIp6.s6_addr, match->fields.ipv6_dst.addr, OF_IPV6_BYTES);
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_BRIDGING:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_BRIDGING_FLOW_MATCH_BITMAP) != IND_OFDPA_BRIDGING_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.bridgingFlowEntry.match_criteria.vlanId       = match->fields.vlan_vid;
-        flow->flowData.bridgingFlowEntry.match_criteria.vlanIdMask   = match->masks.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-        flow->flowData.bridgingFlowEntry.match_criteria.tunnelId     = match->fields.tunnel_id;
-        flow->flowData.bridgingFlowEntry.match_criteria.tunnelIdMask = match->masks.tunnel_id;
-
-        memcpy(flow->flowData.bridgingFlowEntry.match_criteria.destMac.addr, &match->fields.eth_dst, OF_MAC_ADDR_BYTES);
-        memcpy(flow->flowData.bridgingFlowEntry.match_criteria.destMacMask.addr, &match->masks.eth_dst, OF_MAC_ADDR_BYTES);
-      }
-      break;
-/*
-    case OFDPA_FLOW_TABLE_ID_L2_POLICER:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_L2_POLICER_FLOW_MATCH_BITMAP) != IND_OFDPA_L2_POLICER_FLOW_MATCH_BITMAP)
-      {
-       err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_L2_POLICER_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_L2_POLICER_FLOW_MATCH_MAND_BITMAP)
-      {
-       err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.l2PolicerFlowEntry.match_criteria.tunnelId       = match->fields.tunnel_id;
-        flow->flowData.l2PolicerFlowEntry.match_criteria.mplsL2Port     = match->fields.ofdpa_mpls_l2_port;
-        flow->flowData.l2PolicerFlowEntry.match_criteria.mplsL2PortMask = match->masks.ofdpa_mpls_l2_port;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_L2_POLICER_ACTIONS:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_L2_POLICER_ACTIONS_FLOW_MATCH_BITMAP) != IND_OFDPA_L2_POLICER_ACTIONS_FLOW_MATCH_BITMAP)
-      {
-       err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_L2_POLICER_ACTIONS_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_L2_POLICER_ACTIONS_FLOW_MATCH_MAND_BITMAP)
-      {
-       err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.l2PolicerActionsFlowEntry.match_criteria.color             = match->fields.ofdpa_color;
-        flow->flowData.l2PolicerActionsFlowEntry.match_criteria.colorActionsIndex = match->fields.ofdpa_color_actions_index;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_PORT_DSCP_TRUST:
-    case OFDPA_FLOW_TABLE_ID_TUNNEL_DSCP_TRUST:
-    case OFDPA_FLOW_TABLE_ID_MPLS_DSCP_TRUST:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_DSCP_TRUST_FLOW_MATCH_BITMAP) != IND_OFDPA_DSCP_TRUST_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_DSCP_TRUST_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_DSCP_TRUST_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.dscpTrustFlowEntry.match_criteria.qosIndex       = match->fields.ofdpa_qos_index;
-        flow->flowData.dscpTrustFlowEntry.match_criteria.dscpValue      = match->fields.ip_dscp;
-        flow->flowData.dscpTrustFlowEntry.match_criteria.mplsL2Port     = match->fields.ofdpa_mpls_l2_port;
-        flow->flowData.dscpTrustFlowEntry.match_criteria.mplsL2PortMask = match->masks.ofdpa_mpls_l2_port;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_PORT_PCP_TRUST:
-    case OFDPA_FLOW_TABLE_ID_TUNNEL_PCP_TRUST:
-    case OFDPA_FLOW_TABLE_ID_MPLS_PCP_TRUST:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_PCP_TRUST_FLOW_MATCH_BITMAP) != IND_OFDPA_PCP_TRUST_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_PCP_TRUST_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_PCP_TRUST_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.pcpTrustFlowEntry.match_criteria.qosIndex       = match->fields.ofdpa_qos_index;
-        flow->flowData.pcpTrustFlowEntry.match_criteria.pcpValue       = match->fields.vlan_pcp;
-        flow->flowData.pcpTrustFlowEntry.match_criteria.dei            = match->fields.ofdpa_dei;
-        flow->flowData.pcpTrustFlowEntry.match_criteria.mplsL2Port     = match->fields.ofdpa_mpls_l2_port;
-        flow->flowData.pcpTrustFlowEntry.match_criteria.mplsL2PortMask = match->masks.ofdpa_mpls_l2_port;
-      }
-      break;
-
     case OFDPA_FLOW_TABLE_ID_ACL_POLICY:
       if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_ACL_POLICY_FLOW_MATCH_BITMAP) != IND_OFDPA_ACL_POLICY_FLOW_MATCH_BITMAP)
       {
@@ -771,107 +412,6 @@ static indigo_error_t ind_ofdpa_match_fields_masks_get(const of_match_t *match, 
       }
       break;
 
-    case OFDPA_FLOW_TABLE_ID_COLOR_BASED_ACTIONS:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_COLOR_BASED_ACTIONS_FLOW_MATCH_BITMAP) != IND_OFDPA_COLOR_BASED_ACTIONS_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_COLOR_BASED_ACTIONS_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_COLOR_BASED_ACTIONS_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.colorActionsFlowEntry.match_criteria.color = match->fields.ofdpa_color;
-        flow->flowData.colorActionsFlowEntry.match_criteria.index  = match->fields.ofdpa_color_actions_index;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_EGRESS_VLAN:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_EGRESS_VLAN_FLOW_MATCH_BITMAP) != IND_OFDPA_EGRESS_VLAN_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_EGRESS_VLAN_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_EGRESS_VLAN_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.egressVlanFlowEntry.match_criteria.outPort = match->fields.onf_actset_output;
-        flow->flowData.egressVlanFlowEntry.match_criteria.vlanId  = match->fields.vlan_vid;
-        flow->flowData.egressVlanFlowEntry.match_criteria.allowVlanTranslation = match->fields.ofdpa_allow_vlan_translation;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_EGRESS_VLAN_1:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_EGRESS_VLAN1_FLOW_MATCH_BITMAP) != IND_OFDPA_EGRESS_VLAN1_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_EGRESS_VLAN1_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_EGRESS_VLAN1_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.egressVlan1FlowEntry.match_criteria.outPort = match->fields.onf_actset_output;
-        flow->flowData.egressVlan1FlowEntry.match_criteria.vlanId  = match->fields.vlan_vid;
-        flow->flowData.egressVlan1FlowEntry.match_criteria.ovid    = match->fields.ofdpa_ovid;
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_EGRESS_MAINTENANCE_POINT:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_EGRESS_MP_FLOW_MATCH_BITMAP) != IND_OFDPA_EGRESS_MP_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_EGRESS_MP_FLOW_MATCH_MAND_BITMAP)
-              != IND_OFDPA_EGRESS_MP_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.egressMpFlowEntry.match_criteria.outPort            = match->fields.onf_actset_output;
-        flow->flowData.egressMpFlowEntry.match_criteria.vlanId             = match->fields.vlan_vid;
-        flow->flowData.egressMpFlowEntry.match_criteria.vlanIdMask         = match->masks.vlan_vid & (OFDPA_VID_PRESENT | OFDPA_VID_EXACT_MASK);
-        flow->flowData.egressMpFlowEntry.match_criteria.etherType          = match->fields.eth_type;
-        flow->flowData.egressMpFlowEntry.match_criteria.etherTypeMask      = match->masks.eth_type;
-        flow->flowData.egressMpFlowEntry.match_criteria.oamY1731Mdl        = match->fields.ofdpa_oam_y1731_mdl;
-        flow->flowData.egressMpFlowEntry.match_criteria.oamY1731MdlMask    = match->masks.ofdpa_oam_y1731_mdl & OFDPA_OAM_Y1731_MDL_EXACT_MASK;
-        flow->flowData.egressMpFlowEntry.match_criteria.oamY1731Opcode     = match->fields.ofdpa_oam_y1731_opcode;
-        flow->flowData.egressMpFlowEntry.match_criteria.oamY1731OpcodeMask = match->masks.ofdpa_oam_y1731_opcode;
-
-        memcpy(flow->flowData.egressMpFlowEntry.match_criteria.destMac.addr, &match->fields.eth_dst, OF_MAC_ADDR_BYTES);
-        memcpy(flow->flowData.egressMpFlowEntry.match_criteria.destMacMask.addr, &match->masks.eth_dst, OF_MAC_ADDR_BYTES);
-      }
-      break;
-
-    case OFDPA_FLOW_TABLE_ID_EGRESS_DSCP_PCP_REMARK:
-      if ((ind_ofdpa_match_fields_bitmask| IND_OFDPA_EGRESS_DSCP_PCP_REM_FLOW_MATCH_BITMAP)
-            != IND_OFDPA_EGRESS_DSCP_PCP_REM_FLOW_MATCH_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else if ((ind_ofdpa_match_fields_bitmask & IND_OFDPA_EGRESS_DSCP_PCP_REM_FLOW_MATCH_MAND_BITMAP)
-                != IND_OFDPA_EGRESS_DSCP_PCP_REM_FLOW_MATCH_MAND_BITMAP)
-      {
-        err = INDIGO_ERROR_COMPAT;
-      }
-      else
-      {
-        flow->flowData.egressDscpPcpRemarkFlowEntry.match_criteria.etherType      = match->fields.eth_type;
-        flow->flowData.egressDscpPcpRemarkFlowEntry.match_criteria.etherTypeMask  = match->masks.eth_type;
-        flow->flowData.egressDscpPcpRemarkFlowEntry.match_criteria.outPort        = match->fields.onf_actset_output;
-        flow->flowData.egressDscpPcpRemarkFlowEntry.match_criteria.trafficClass   = match->fields.ofdpa_traffic_class;
-        flow->flowData.egressDscpPcpRemarkFlowEntry.match_criteria.color          = match->fields.ofdpa_color;
-      }
-      break;
-*/
     default:
       LOG_ERROR("Invalid table id %d", flow->tableId);
       err = INDIGO_ERROR_PARAM;
@@ -882,6 +422,7 @@ static indigo_error_t ind_ofdpa_match_fields_masks_get(const of_match_t *match, 
   {
     LOG_ERROR("Incompatible match field(s) for table %d.", flow->tableId);
   }
+#endif
 
   return err;
 }
@@ -894,73 +435,12 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
   int rv;
 
   OF_LIST_ACTION_ITER(actions, &act, rv) 
-
   {
     switch (act.object_id) 
     {
       case OF_ACTION_OUTPUT: 
       {
         of_action_output_port_get(&act, &port_no);
-        switch (port_no) 
-        {
-          case OF_PORT_DEST_CONTROLLER: 
-          {
-            switch(flow->tableId)
-            {
-              case OFDPA_FLOW_TABLE_ID_TERMINATION_MAC:
-                flow->flowData.terminationMacFlowEntry.outputPort = OFDPA_PORT_CONTROLLER; 
-                break;
-              case OFDPA_FLOW_TABLE_ID_BRIDGING:
-                flow->flowData.bridgingFlowEntry.outputPort = OFDPA_PORT_CONTROLLER;
-                break;
-              case OFDPA_FLOW_TABLE_ID_ACL_POLICY:
-                flow->flowData.policyAclFlowEntry.outputPort = OFDPA_PORT_CONTROLLER;
-                break;
-              default:
-                LOG_ERROR("Upsupported output port action (OFPP_CONTROLLER) for Table: %d", flow->tableId);
-                return INDIGO_ERROR_COMPAT;
-            }
-            break;
-          }
-          case OF_PORT_DEST_FLOOD: 
-          case OF_PORT_DEST_ALL:
-          case OF_PORT_DEST_USE_TABLE:
-          case OF_PORT_DEST_LOCAL:
-          case OF_PORT_DEST_IN_PORT:
-          case OF_PORT_DEST_NORMAL:
-            LOG_INFO("Unsupported output port 0x%x", port_no);
-            return INDIGO_ERROR_NOT_SUPPORTED;
-          default:
-            /* Physical or logical port as output port */ 
-            /* If the port is tunnel logical port */
-            if (ind_ofdpa_match_fields_bitmask & IND_OFDPA_TUNNEL_ID)
-            {
-              if (flow->tableId == OFDPA_FLOW_TABLE_ID_BRIDGING)
-              {
-                flow->flowData.bridgingFlowEntry.tunnelLogicalPort = port_no;
-                flow->flowData.bridgingFlowEntry.outputPort = port_no;
-              }
-              else if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-              { 
-                flow->flowData.policyAclFlowEntry.outputPort = port_no;
-              }
-              else
-              {
-                invalidPort = 1;
-              }
-            }
-            if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY ||flow->tableId == OFDPA_FLOW_TABLE_ID_BRIDGING )
-            { 
-                flow->flowData.policyAclFlowEntry.outputPort = port_no;
-            }
-
-            if (invalidPort)
-            {
-              LOG_ERROR("Unsupported output port %d for Table %d", port_no, flow->tableId);
-              return INDIGO_ERROR_NOT_SUPPORTED;
-            }
-            break;
-        }
         break;
       }
       case OF_ACTION_SET_FIELD: 
@@ -997,17 +477,7 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
           {
             uint8_t vlan_pcp;
             of_oxm_vlan_pcp_value_get(&oxm, &vlan_pcp);
-            if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-            {
-              flow->flowData.policyAclFlowEntry.vlanPcpAction = 1;
-              flow->flowData.policyAclFlowEntry.vlanPcp = vlan_pcp;
-              break;
-            } 
-            else
-            {
-              LOG_ERROR("Unsupported set-field oxm %s for table %d", of_object_id_str[oxm.object_id], flow->tableId);
-              return INDIGO_ERROR_COMPAT;
-            }
+            break;
           }
           case OF_OXM_ETH_SRC: 
           {
@@ -1041,16 +511,6 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
             {
               LOG_ERROR("invalid dscp %d in action %s", ip_dscp,
                         of_object_id_str[act.object_id]);
-              return INDIGO_ERROR_COMPAT;
-            }
-            if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-            {
-              flow->flowData.policyAclFlowEntry.dscpAction = 1;
-              flow->flowData.policyAclFlowEntry.dscp = ip_dscp;
-            }
-            else
-            {
-              LOG_ERROR("Unsupported set-field oxm %s for table %d", of_object_id_str[oxm.object_id], flow->tableId);
               return INDIGO_ERROR_COMPAT;
             }
             break;
@@ -1127,16 +587,6 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
       {
         uint32_t queue_id;
         of_action_set_queue_queue_id_get(&act, &queue_id);
-        if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-        {
-//          flow->flowData.policyAclFlowEntry.queueIDAction = 1;
-//          flow->flowData.policyAclFlowEntry.queueID = queue_id;
-        }
-        else
-        {
-          LOG_ERROR("Unsupported action %s for table %d", of_object_id_str[act.object_id], flow->tableId);
-          return INDIGO_ERROR_COMPAT;
-        }
         break;
       } 
       case OF_ACTION_SET_DL_DST: 
@@ -1167,16 +617,6 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
       {
         uint8_t tos;
         of_action_set_nw_tos_nw_tos_get(&act, &tos);
-        if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-        {
-          flow->flowData.policyAclFlowEntry.dscpAction = 1; 
-          flow->flowData.policyAclFlowEntry.dscp = tos;
-        }
-        else
-        {
-          LOG_ERROR("Unsupported action %s for table %d", of_object_id_str[act.object_id], flow->tableId);
-          return INDIGO_ERROR_COMPAT;
-        }
         break;
       }
       case OF_ACTION_SET_TP_DST: 
@@ -1202,16 +642,6 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
       {
         uint8_t vlan_pcp;
         of_action_set_vlan_pcp_vlan_pcp_get(&act, &vlan_pcp);
-        if (flow->tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-        {
-          flow->flowData.policyAclFlowEntry.vlanPcpAction = 1;
-          flow->flowData.policyAclFlowEntry.vlanPcp = vlan_pcp;
-        }
-        else
-        {
-          LOG_ERROR("Unsupported action %s for table %d", of_object_id_str[act.object_id], flow->tableId);
-          return INDIGO_ERROR_COMPAT;
-        } 
         break;
       }
       case OF_ACTION_POP_VLAN:
@@ -1247,28 +677,6 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
       {
         uint32_t group_id;
         of_action_group_group_id_get(&act, &group_id);
-        switch(flow->tableId)
-        {
-          case OFDPA_FLOW_TABLE_ID_BRIDGING:
-            flow->flowData.bridgingFlowEntry.groupID = group_id;
-            break;
-        
-          case OFDPA_FLOW_TABLE_ID_UNICAST_ROUTING:
-            flow->flowData.unicastRoutingFlowEntry.groupID = group_id;
-            break;
-
-          case OFDPA_FLOW_TABLE_ID_MULTICAST_ROUTING:
-            flow->flowData.multicastRoutingFlowEntry.groupID = group_id;
-            break;
-
-          case OFDPA_FLOW_TABLE_ID_ACL_POLICY:
-            flow->flowData.policyAclFlowEntry.groupID = group_id;
-            break;
-
-          default:
-            LOG_ERROR("Unsupported action %s for table %d", of_object_id_str[act.object_id], flow->tableId);
-            break;
-        }
         break;
       }
       default:
@@ -1279,13 +687,66 @@ static indigo_error_t ind_ofdpa_translate_openflow_actions(of_list_action_t *act
 
   return INDIGO_ERROR_NONE;
 }
-
+#if 0
 static indigo_error_t
 ind_ofdpa_instructions_get(of_flow_modify_t *flow_mod, ofdpaFlowEntry_t *flow)
 {
 
   return INDIGO_ERROR_NONE;
 }
+#else
+static indigo_error_t
+ind_ofdpa_instructions_get(of_flow_modify_t *flow_mod, ofdpaFlowEntry_t *flow)
+{
+  of_list_action_t openflow_actions;
+  indigo_error_t err;
+  uint8_t next_table_id;
+  uint32_t meter_id;
+  int rv;
+  of_list_instruction_t insts;
+  of_instruction_t inst;
+  uint8_t table_id;
+
+
+  of_flow_modify_instructions_bind(flow_mod, &insts);
+
+  of_flow_modify_table_id_get(flow_mod, &table_id);
+
+  OF_LIST_INSTRUCTION_ITER(&insts, &inst, rv)
+  {
+    switch (inst.object_id)
+    {
+      case OF_INSTRUCTION_APPLY_ACTIONS:
+//        of_instruction_apply_actions_actions_bind(&inst.apply_actions, &openflow_actions);
+//        if ((err = ind_ofdpa_translate_openflow_actions(&openflow_actions, flow)) < 0)
+//        {
+//          return err;
+//        }
+        break;
+      case OF_INSTRUCTION_WRITE_ACTIONS:
+//        of_instruction_write_actions_actions_bind(&inst.write_actions, &openflow_actions);
+//        if ((err = ind_ofdpa_translate_openflow_actions(&openflow_actions, flow)) < 0)
+//        {
+//          return err;
+//        }
+        break;
+      case OF_INSTRUCTION_CLEAR_ACTIONS:
+        break;
+      case OF_INSTRUCTION_GOTO_TABLE:
+//        of_instruction_goto_table_table_id_get(&inst.goto_table, &next_table_id);
+        break;
+      case OF_INSTRUCTION_METER:
+//        of_instruction_meter_meter_id_get(&inst.meter, &meter_id);
+        LOG_ERROR("Unsupported instruction: meter_id.");
+        break;
+      default:
+        LOG_ERROR("Invalid instruction.");
+        return INDIGO_ERROR_COMPAT;
+    }
+  }
+  return INDIGO_ERROR_NONE;
+}
+#endif
 
 static indigo_error_t ind_ofdpa_packet_out_actions_get(of_list_action_t *of_list_actions, 
                                                        indPacketOutActions_t *packetOutActions)
@@ -1365,6 +826,17 @@ indigo_error_t
 indigo_fwd_forwarding_features_get(of_features_reply_t *features)
 {
     AIM_LOG_VERBOSE("forwarding features get called\n");
+    uint32_t capabilities = 0, actions = 0;
+
+    of_features_reply_n_tables_set(features, 1);
+
+    OF_CAPABILITIES_FLAG_FLOW_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_TABLE_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_PORT_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_QUEUE_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_ARP_MATCH_IP_SET(capabilities, features->version);
+    of_features_reply_capabilities_set(features, capabilities);
+
     return INDIGO_ERROR_NONE;
 }
 #endif
@@ -1437,51 +909,8 @@ indigo_error_t indigo_fwd_flow_create(indigo_cookie_t flow_id,
     LOG_TRACE("Failed to get flow instructions. (err = %d)", err);
     return err;
   }
-  #if 0  
-if(flow.tableId == OFDPA_FLOW_TABLE_ID_ACL_POLICY)
-{
-      LOG_INFO("###Nokia DPA Integration### match fields: inPort %d inPortMask %x etherType 0x%x, vlanId %d vlanIdMask %x,vlanPcp %d,vlanPcpMask %x",flow.flowData.policyAclFlowEntry.match_criteria.inPort,flow.flowData.policyAclFlowEntry.match_criteria.inPortMask,
-        flow.flowData.policyAclFlowEntry.match_criteria.etherType,flow.flowData.policyAclFlowEntry.match_criteria.vlanId,flow.flowData.policyAclFlowEntry.match_criteria.vlanIdMask,
-         flow.flowData.policyAclFlowEntry.match_criteria.vlanPcp, flow.flowData.policyAclFlowEntry.match_criteria.vlanPcpMask);
-      LOG_INFO("###Nokia DPA Integration### match fields: src mac %02x:%02x:%02x:%02x:%02x:%02x mask %02x:%02x:%02x:%02x:%02x:%02x dst mac %02x:%02x:%02x:%02x:%02x:%02x,mask %02x:%02x:%02x:%02x:%02x:%02x",
-        flow.flowData.policyAclFlowEntry.match_criteria.srcMac.addr[0],flow.flowData.policyAclFlowEntry.match_criteria.srcMac.addr[1],flow.flowData.policyAclFlowEntry.match_criteria.srcMac.addr[2],
-        flow.flowData.policyAclFlowEntry.match_criteria.srcMac.addr[3],flow.flowData.policyAclFlowEntry.match_criteria.srcMac.addr[4],flow.flowData.policyAclFlowEntry.match_criteria.srcMac.addr[5],
-        flow.flowData.policyAclFlowEntry.match_criteria.srcMacMask.addr[0],flow.flowData.policyAclFlowEntry.match_criteria.srcMacMask.addr[1],flow.flowData.policyAclFlowEntry.match_criteria.srcMacMask.addr[2],
-        flow.flowData.policyAclFlowEntry.match_criteria.srcMacMask.addr[3],flow.flowData.policyAclFlowEntry.match_criteria.srcMacMask.addr[4],flow.flowData.policyAclFlowEntry.match_criteria.srcMacMask.addr[5],
-        flow.flowData.policyAclFlowEntry.match_criteria.destMac.addr[0],flow.flowData.policyAclFlowEntry.match_criteria.destMac.addr[1],flow.flowData.policyAclFlowEntry.match_criteria.destMac.addr[2],
-        flow.flowData.policyAclFlowEntry.match_criteria.destMac.addr[3],flow.flowData.policyAclFlowEntry.match_criteria.destMac.addr[4],flow.flowData.policyAclFlowEntry.match_criteria.destMac.addr[5],
-        flow.flowData.policyAclFlowEntry.match_criteria.destMacMask.addr[0],flow.flowData.policyAclFlowEntry.match_criteria.destMacMask.addr[1],flow.flowData.policyAclFlowEntry.match_criteria.destMacMask.addr[2],
-        flow.flowData.policyAclFlowEntry.match_criteria.destMacMask.addr[3],flow.flowData.policyAclFlowEntry.match_criteria.destMacMask.addr[4],flow.flowData.policyAclFlowEntry.match_criteria.destMacMask.addr[5]);
-      LOG_INFO("###Nokia DPA Integration### match fields: sourceIp4 0x%x, sourceIp4Mask 0x%x,destIp4 0x%x,destIp4Mask 0x%x,dscp %d dscpMask %d",flow.flowData.policyAclFlowEntry.match_criteria.sourceIp4,flow.flowData.policyAclFlowEntry.match_criteria.sourceIp4Mask,
-        flow.flowData.policyAclFlowEntry.match_criteria.destIp4,flow.flowData.policyAclFlowEntry.match_criteria.destIp4Mask,flow.flowData.policyAclFlowEntry.match_criteria.dscp,flow.flowData.policyAclFlowEntry.match_criteria.dscpMask);
-      LOG_INFO("###Nokia DPA Integration### action: groupID %d queueIDAction %d,queueID%d vlanIDAction %d VlanId %d,vlanPcpAction %d,vlanPcp %d dscpAction %d,dscp %d outputTunnelPort %d outputPort %d clearActions%d",
-        flow.flowData.policyAclFlowEntry.groupID,flow.flowData.policyAclFlowEntry.queueIDAction,flow.flowData.policyAclFlowEntry.queueID,flow.flowData.policyAclFlowEntry.vlanAction,
-        flow.flowData.policyAclFlowEntry.VlanId,flow.flowData.policyAclFlowEntry.vlanPcpAction,flow.flowData.policyAclFlowEntry.vlanPcp,flow.flowData.policyAclFlowEntry.dscpAction,flow.flowData.policyAclFlowEntry.dscp,
-        flow.flowData.policyAclFlowEntry.outputTunnelPort,flow.flowData.policyAclFlowEntry.outputPort,flow.flowData.policyAclFlowEntry.clearActions);
-}
-if(flow.tableId == OFDPA_FLOW_TABLE_ID_BRIDGING)
-{
-      LOG_INFO("###Nokia DPA Integration### match fields: vlanId %d tunnelId %d dest mac %02x:%02x:%02x:%02x:%02x:%02x,mask %02x:%02x:%02x:%02x:%02x:%02x",flow.flowData.bridgingFlowEntry.match_criteria.vlanId,
-        flow.flowData.bridgingFlowEntry.match_criteria.tunnelId,flow.flowData.bridgingFlowEntry.match_criteria.destMac.addr[0],flow.flowData.bridgingFlowEntry.match_criteria.destMac.addr[1],
-        flow.flowData.bridgingFlowEntry.match_criteria.destMac.addr[2],flow.flowData.bridgingFlowEntry.match_criteria.destMac.addr[3],flow.flowData.bridgingFlowEntry.match_criteria.destMac.addr[4],flow.flowData.bridgingFlowEntry.match_criteria.destMac.addr[5],
-        flow.flowData.bridgingFlowEntry.match_criteria.destMacMask.addr[0],flow.flowData.bridgingFlowEntry.match_criteria.destMacMask.addr[1],flow.flowData.bridgingFlowEntry.match_criteria.destMacMask.addr[2],
-        flow.flowData.bridgingFlowEntry.match_criteria.destMacMask.addr[3],flow.flowData.bridgingFlowEntry.match_criteria.destMacMask.addr[4],flow.flowData.bridgingFlowEntry.match_criteria.destMacMask.addr[5]);
-      LOG_INFO("###Nokia DPA Integration### actions: tunnelLogicalPort %d outputPort %d",flow.flowData.bridgingFlowEntry.tunnelLogicalPort,flow.flowData.bridgingFlowEntry.outputPort);
 
-}
-if(flow.tableId == OFDPA_FLOW_TABLE_ID_VLAN_INGRESS)
-{
-       LOG_INFO("###Nokia DPA Integration### match fields: inPort %d vlanId %d vlanIdMask %x, action new vlan id %d gototable %d",flow.flowData.IngressvlanFlowEntry.match_criteria.inPort,flow.flowData.IngressvlanFlowEntry.match_criteria.vlanId,
-        flow.flowData.IngressvlanFlowEntry.match_criteria.vlanIdMask,flow.flowData.IngressvlanFlowEntry.newVlanId,flow.flowData.IngressvlanFlowEntry.gotoTableId);
-
-}
-if(flow.tableId == OFDPA_FLOW_TABLE_ID_VLAN_EGRESS)
-{
-       LOG_INFO("###Nokia DPA Integration### match fields: inPort %d vlanId %d vlanIdMask %x, action new vlan id %d gototable %d",flow.flowData.EgressvlanFlowEntry.match_criteria.inPort,flow.flowData.EgressvlanFlowEntry.match_criteria.vlanId,
-        flow.flowData.EgressvlanFlowEntry.match_criteria.vlanIdMask,flow.flowData.EgressvlanFlowEntry.newVlanId,flow.flowData.EgressvlanFlowEntry.gotoTableId);
-
-}
-  #endif
+  // todo: adjust to the rrc api here.
 
   /* Submit the changes to ofdpa */
   ofdpa_rv = ofdpaFlowAdd(&flow);
