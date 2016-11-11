@@ -1148,7 +1148,7 @@ indigo_error_t indigo_fwd_table_stats_get(of_table_stats_request_t *table_stats_
 
   return(INDIGO_ERROR_NONE);
 }
-#if 0
+#if 1
 indigo_error_t indigo_fwd_packet_out(of_packet_out_t *packet_out)
 {
   OFDPA_ERROR_t  ofdpa_rv = OFDPA_E_NONE;

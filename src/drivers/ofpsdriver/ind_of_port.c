@@ -516,7 +516,16 @@ indigo_error_t indigo_port_features_get(of_features_reply_t *features)
 indigo_error_t
 indigo_port_features_get(of_features_reply_t *features)
 {
-    AIM_LOG_VERBOSE("port features get called\n");
+	uint32_t capabilities = 0;
+
+	AIM_LOG_VERBOSE("port features get called\n");
+
+    OF_CAPABILITIES_FLAG_FLOW_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_TABLE_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_PORT_STATS_SET(capabilities, features->version);
+    OF_CAPABILITIES_FLAG_QUEUE_STATS_SET(capabilities, features->version);
+    of_features_reply_capabilities_set(features, capabilities);
+
     return INDIGO_ERROR_NONE;
 }
 #endif
@@ -684,7 +693,7 @@ indigo_error_t indigo_port_stats_get(of_port_stats_request_t *port_stats_request
   of_port_no_t req_of_port_num;
   of_port_stats_reply_t *reply;
   int dump_all = 0;
-  int32_t port = -1;
+  uint32_t port = 0;
 
 
   //LOG_TRACE("%s() called", __FUNCTION__);
@@ -713,7 +722,7 @@ indigo_error_t indigo_port_stats_get(of_port_stats_request_t *port_stats_request
   of_port_stats_request_port_no_get(port_stats_request, &req_of_port_num);
   if (req_of_port_num == OF_PORT_DEST_NONE_BY_VERSION(port_stats_request->version)) 
   {
-    ofdpa_rv = ofdpaPortNextGet(-1, &port);
+    ofdpa_rv = ofdpaPortNextGet(0, &port);
     if (ofdpa_rv != OFDPA_E_NONE)
     {
       LOG_ERROR("Failed to get first port.");

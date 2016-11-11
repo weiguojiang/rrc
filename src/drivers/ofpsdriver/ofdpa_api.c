@@ -957,7 +957,7 @@ OFDPA_ERROR_t ofdpaPortNextGet(uint32_t portNum, uint32_t *nextPortNum)
     if(rte_port_next_get(portNum,nextPortNum,xgmac_flag) != NCP_ST_SUCCESS)
       return OFDPA_E_INTERNAL;
 #else
-    if(portNum < 10)
+    if(portNum < 3)
     {
         *nextPortNum = portNum + 1;
     }
@@ -1195,8 +1195,7 @@ OFDPA_ERROR_t ofdpaPortStatsGet(uint32_t portNum, ofdpaPortStats_t *stats)
     stats->tx_packets = (((uint64_t)tx_mac_stats.tx_frm.h)<<32&0xFFFFFFFF00000000)| tx_mac_stats.tx_frm.l;
     stats->tx_bytes   = (((uint64_t)tx_mac_stats.tx_octets.h)<<32&0xFFFFFFFF00000000)| tx_mac_stats.tx_octets.l;
     stats->tx_errors  = (((uint64_t)tx_mac_stats.tx_bad_frm.h)<<32&0xFFFFFFFF00000000)| tx_mac_stats.tx_bad_frm.l;
-
-    stats->port_no = portNum;
+#else
     stats->rx_packets = 100;
     stats->tx_packets = 100;
 
@@ -1769,7 +1768,7 @@ OFDPA_ERROR_t ofdpaTunnelEcmpNextHopGroupMemberNextGet(uint32_t ecmpNextHopListG
 *********************************************************************/
 OFDPA_ERROR_t ofdpaPktSend(ofdpa_buffdesc *pkt, uint32_t flags, uint32_t outPortNum, uint32_t inPortNum)
 {
-
+   return OFDPA_E_NONE;
 }
 
 /*********************************************************************
