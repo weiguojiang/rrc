@@ -275,7 +275,7 @@ static indigo_error_t ind_ofdpa_port_desc_set(of_port_no_t port, of_port_desc_t 
   memcpy(&of_mac, &mac, sizeof(of_mac)); 
   of_port_desc_hw_addr_set(of_port_desc, of_mac);
 
-#ifdef RTE_MODE
+#if 1
   /* Port Name */
   memset(buff, 0, sizeof(buff));
   nameDesc.pstart = buff;
@@ -305,16 +305,32 @@ static indigo_error_t ind_ofdpa_port_desc_set(of_port_no_t port, of_port_desc_t 
 //  sprintf(portName, "SDN port%d", port); 
 #endif
   of_port_desc_state_set(of_port_desc, state);
-//  of_port_desc_config_set(of_port_desc, status.config);
-//  of_port_desc_state_set(of_port_desc, status.linkStatus);
+
   /* Port Features */
   err = ind_ofdpa_port_features_set(port, of_port_desc);
   if (err != INDIGO_ERROR_NONE)
   {
     LOG_ERROR("Failed to get Port Features. (err = %d)\n", err);
   }
-//  of_port_desc_curr_speed_set(of_port_desc, status.speed);
-//  of_port_desc_max_speed_set(of_port_desc, status.speed);
+
+  /* Port Current Speed in kbps */
+  ofdpa_rv = ofdpaPortCurrSpeedGet(port, &speed);
+  if (ofdpa_rv != OFDPA_E_NONE)
+  {
+    LOG_ERROR("Failed to get Port Current Speed. (ofdpa_rv = %d)\n", ofdpa_rv);
+  }
+  of_port_desc_curr_speed_set(of_port_desc, speed);
+
+
+  /* Port Maximum Speed in kbps */
+  speed = 0;
+  ofdpa_rv = ofdpaPortMaxSpeedGet(port, &speed);
+  if (ofdpa_rv != OFDPA_E_NONE)
+  {
+    LOG_ERROR("Failed to get Port Max Speed. (ofdpa_rv = %d)\n", ofdpa_rv);
+  }
+  of_port_desc_max_speed_set(of_port_desc, speed);
+  
   return INDIGO_ERROR_NONE;
 }
 /*add by liuxiao for port status update debugging*/
@@ -529,7 +545,7 @@ indigo_port_features_get(of_features_reply_t *features)
     return INDIGO_ERROR_NONE;
 }
 #endif
-#if 1
+
 /*
  * Truncate the object to its initial length.
  *
@@ -549,7 +565,7 @@ indigo_error_t indigo_port_desc_stats_get(of_port_desc_stats_reply_t *port_desc_
   OFDPA_ERROR_t ofdpa_rv = OFDPA_E_NONE;
   of_port_desc_t *of_port_desc = 0;
   of_list_port_desc_t *of_list_port_desc = 0;
-  int32_t port = -1, nextPort = 0;
+  int32_t port = 0, nextPort = 0;
       
   //LOG_TRACE("%s() called.", __FUNCTION__);
   //LOG_INFO("indigo_port_desc_stats_get line %d.",__LINE__);  
@@ -614,14 +630,6 @@ indigo_error_t indigo_port_desc_stats_get(of_port_desc_stats_reply_t *port_desc_
       of_port_desc_delete(of_port_desc);
   return err;  
 }
-#else
-indigo_error_t indigo_port_desc_stats_get(
-    of_port_desc_stats_reply_t *port_desc_stats_reply)
-{
-    AIM_LOG_VERBOSE("port desc stats get called");
-    return INDIGO_ERROR_NONE;
-}
-#endif
 
 #if 0
 indigo_error_t indigo_port_modify(of_port_mod_t *port_mod)
