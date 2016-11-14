@@ -717,26 +717,26 @@ ind_ofdpa_instructions_get(of_flow_modify_t *flow_mod, ofdpaFlowEntry_t *flow)
     switch (inst.object_id)
     {
       case OF_INSTRUCTION_APPLY_ACTIONS:
-//        of_instruction_apply_actions_actions_bind(&inst.apply_actions, &openflow_actions);
-//        if ((err = ind_ofdpa_translate_openflow_actions(&openflow_actions, flow)) < 0)
-//        {
-//          return err;
-//        }
+        of_instruction_apply_actions_actions_bind(&inst, &openflow_actions);
+        if ((err = ind_ofdpa_translate_openflow_actions(&openflow_actions, flow)) < 0)
+        {
+          return err;
+        }
         break;
       case OF_INSTRUCTION_WRITE_ACTIONS:
-//        of_instruction_write_actions_actions_bind(&inst.write_actions, &openflow_actions);
-//        if ((err = ind_ofdpa_translate_openflow_actions(&openflow_actions, flow)) < 0)
-//        {
-//          return err;
-//        }
+        of_instruction_write_actions_actions_bind(&inst, &openflow_actions);
+        if ((err = ind_ofdpa_translate_openflow_actions(&openflow_actions, flow)) < 0)
+        {
+          return err;
+        }
         break;
       case OF_INSTRUCTION_CLEAR_ACTIONS:
         break;
       case OF_INSTRUCTION_GOTO_TABLE:
-//        of_instruction_goto_table_table_id_get(&inst.goto_table, &next_table_id);
+        of_instruction_goto_table_table_id_get(&inst, &next_table_id);
         break;
       case OF_INSTRUCTION_METER:
-//        of_instruction_meter_meter_id_get(&inst.meter, &meter_id);
+        of_instruction_meter_meter_id_get(&inst, &meter_id);
         LOG_ERROR("Unsupported instruction: meter_id.");
         break;
       default:

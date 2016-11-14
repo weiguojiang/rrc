@@ -275,7 +275,6 @@ static indigo_error_t ind_ofdpa_port_desc_set(of_port_no_t port, of_port_desc_t 
   memcpy(&of_mac, &mac, sizeof(of_mac)); 
   of_port_desc_hw_addr_set(of_port_desc, of_mac);
 
-#if 1
   /* Port Name */
   memset(buff, 0, sizeof(buff));
   nameDesc.pstart = buff;
@@ -303,7 +302,7 @@ static indigo_error_t ind_ofdpa_port_desc_set(of_port_no_t port, of_port_desc_t 
   }
 //#else
 //  sprintf(portName, "SDN port%d", port); 
-#endif
+
   of_port_desc_state_set(of_port_desc, state);
 
   /* Port Features */
@@ -1213,6 +1212,9 @@ void testPortStatus()
     g_report_once_flag = 0;
 	/*case 1, port 0, resean 0*/
     //LOG_INFO("testPortStatus called, COUNTER %d", g_callback_counter);
+
+    if (g_report_once_flag == 0)
+    	return;
 
 	for(port_num=0; (port_num<10) && (0 == g_report_once_flag); port_num++)
 	{
