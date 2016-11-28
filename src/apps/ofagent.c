@@ -885,7 +885,7 @@ int main(int argc, char *argv[])
       }
   }
 
-  of_desc_str_t mfr_desc = "Nokia Corp.";
+  of_desc_str_t mfr_desc = "kkk Corp.";
   ind_core_mfr_desc_set(mfr_desc);
 
   of_desc_str_t sw_desc = "OF-DPA 2.0";

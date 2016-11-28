@@ -358,7 +358,7 @@ static indigo_error_t port_desc_set(of_port_desc_t *of_port_desc, uint32_t port_
     	
     	if(ofdpa_rv != NCP_ST_SUCCESS)
     	{
-    		LOG_INFO("###Nokia DPA Integration###:chendong !!ncp_eioa_mac_addr_get ofdpa_rv = %d", ofdpa_rv);
+    		LOG_INFO("###kkk DPA Integration###:chendong !!ncp_eioa_mac_addr_get ofdpa_rv = %d", ofdpa_rv);
             g_of_port_status[port_no].isPortConfigured = 0; /*set to not configured*/
     		return (indigoConvertOfdpaRv(ofdpa_rv));
     	}
@@ -399,7 +399,7 @@ static indigo_error_t port_desc_set(of_port_desc_t *of_port_desc, uint32_t port_
         of_port_desc_port_no_set(of_port_desc, port_no);
     
     of_port_desc_hw_addr_set(of_port_desc, mac);
-    of_port_desc_name_set(of_port_desc, "Nokia");
+    of_port_desc_name_set(of_port_desc, "kkk");
 
     uint32_t config = 0;
 

@@ -1,5 +1,5 @@
 ##################################
-# (C) Copyright 2004 Nokia, Inc.
+# (C) Copyright 2004 kkk, Inc.
 # All rights reserved.
 #
 # $Author: tsheng $

@@ -1,5 +1,5 @@
 ##################################
-# (C) Copyright 2016 Nokia, Inc.
+# (C) Copyright 2016 kkk, Inc.
 # All rights reserved.
 #
 # $DateTime: $

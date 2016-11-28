@@ -852,7 +852,7 @@ indigo_error_t indigo_fwd_flow_create(indigo_cookie_t flow_id,
   uint16_t idle_timeout, hard_timeout;
   of_match_t of_match;
 
-  LOG_INFO("###Nokia DPA Integration###:Flow create called");
+  LOG_INFO("###kkk DPA Integration###:Flow create called");
 
   if (flow_add->version < OF_VERSION_1_3) 
   {

@@ -1784,7 +1784,7 @@ OFDPA_ERROR_t ofdpaPktSend(ofdpa_buffdesc *pkt, uint32_t flags, uint32_t outPort
  * ********************************************************************/
 OFDPA_ERROR_t ofdpaMaxPktSizeGet(uint32_t *pktSize)
 {
-    /*AXM5516 default max packet size is 10000, it meets Nokia's requirment 9600bytes untagged*/
+    /*AXM5516 default max packet size is 10000, it meets kkk's requirment 9600bytes untagged*/
     *pktSize = 10000;  
 }
 
