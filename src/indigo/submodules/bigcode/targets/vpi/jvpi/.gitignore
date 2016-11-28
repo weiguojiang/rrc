@@ -1,4 +1,0 @@
-*.class
-com/bigswitch/vpi/native_/swig/*.java
-VPI_wrap.c
-jvpim.mk

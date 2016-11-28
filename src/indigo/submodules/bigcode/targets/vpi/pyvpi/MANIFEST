@@ -1,5 +1,0 @@
-setup.py
-vpi/__init__.py
-vpi/pyvpitool
-vpi/vpi.py
-build/gcc-local/bin/pyvpi.so

@@ -1,8 +1,0 @@
-###############################################################################
-#
-# orc README
-#
-###############################################################################
-
-Open Route Cache -- listens to rtnetlink info and writes it to a chip-specific
-driver.  See glued as an example with BRCM hardware.

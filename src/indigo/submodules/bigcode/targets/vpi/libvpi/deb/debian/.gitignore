@@ -1,7 +1,0 @@
-files
-libvpi/
-tmp/
-*.debhelper
-*.substvars
-*.log
-

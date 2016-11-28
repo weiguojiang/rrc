@@ -1,5 +1,0 @@
-build/
-*.mk
-!utests/make/*.mk
-dependmodules.x
-*.log
